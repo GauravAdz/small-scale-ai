@@ -83,13 +83,6 @@
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
             overscroll-behavior: contain;
-            display: flex;
-            flex-direction: column-reverse;
-        }
-
-        .messages-container {
-            display: flex;
-            flex-direction: column;
         }
 
         .message {
@@ -333,22 +326,23 @@ Format your responses with clear paragraphs and proper spacing for readability.
             }
         }
 
-        function addMessage(sender, text, isError = false) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${sender} ${isError ? 'error' : ''}`;
-            
-            const messageContent = document.createElement('div');
-            messageContent.textContent = `${sender === 'user' ? 'You' : 'Gaurav'}: ${text}`;
-            messageDiv.appendChild(messageContent);
-            
-            const timestamp = document.createElement('span');
-            timestamp.className = 'timestamp';
-            timestamp.textContent = getCurrentTime();
-            messageDiv.appendChild(timestamp);
-            
-            messagesContainer.insertBefore(messageDiv, messagesContainer.firstChild);
-            scrollToBottom();
-        }
+    function addMessage(sender, text, isError = false) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${sender} ${isError ? 'error' : ''}`;
+        
+        const messageContent = document.createElement('div');
+        messageContent.textContent = `${sender === 'user' ? 'You' : 'Gaurav'}: ${text}`;
+        messageDiv.appendChild(messageContent);
+        
+        const timestamp = document.createElement('span');
+        timestamp.className = 'timestamp';
+        timestamp.textContent = getCurrentTime();
+        messageDiv.appendChild(timestamp);
+        
+        // Changed from insertBefore to appendChild
+        messagesContainer.appendChild(messageDiv);
+        scrollToBottom();
+    }
 
 form.addEventListener('submit', async function (e) {
     e.preventDefault();
