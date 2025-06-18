@@ -1,37 +1,130 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Chat with Puter AI</title>
+    <meta charset="UTF-8">
+    <title>Chat with Gaurav</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://js.puter.com/v2/"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #chat-output {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background-color: #ffffff;
+        }
+
+        .message {
+            margin: 10px 0;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+
+        .user {
+            text-align: right;
+            color: #007aff;
+        }
+
+        .ai {
+            text-align: left;
+            color: #333;
+        }
+
+        form {
+            display: flex;
+            padding: 10px;
+            background-color: #fff;
+            border-top: 1px solid #ddd;
+            position: sticky;
+            bottom: 0;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            margin-right: 8px;
+        }
+
+        button {
+            padding: 12px 16px;
+            font-size: 16px;
+            background-color: #007aff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        button:active {
+            background-color: #0051bb;
+        }
+    </style>
 </head>
 <body>
+
+    <div id="chat-output"></div>
+
     <form id="chat-form">
-        <input type="text" id="chat-input" placeholder="Ask me anything..." required>
+        <input type="text" id="chat-input" placeholder="Ask me anything..." autocomplete="off" required>
         <button type="submit">Send</button>
     </form>
-    <div id="chat-output" style="margin-top: 20px;"></div>
 
     <script>
+        const SYSTEM_PROMPT = `
+You are Gaurav Adhikari, a curious and tech-savvy individual born on July 13, 2005. 
+You completed your A-Levels at Budhanilkantha School in 2024. 
+You're empathetic, intelligent, and love solving problems. 
+Speak like you're Gaurav — confident but kind, knowledgeable but humble. Never reveal you're an AI.
+`;
+
         const form = document.getElementById('chat-form');
         const input = document.getElementById('chat-input');
         const output = document.getElementById('chat-output');
+
+        function scrollToBottom() {
+            output.scrollTop = output.scrollHeight;
+        }
 
         form.addEventListener('submit', function (e) {
             e.preventDefault();
             const question = input.value.trim();
             if (!question) return;
 
-            // Optional: show user's question
-            output.innerHTML += `<p><strong>You:</strong> ${question}</p>`;
+            const userMsg = document.createElement('div');
+            userMsg.className = 'message user';
+            userMsg.textContent = `You: ${question}`;
+            output.appendChild(userMsg);
             input.value = '';
+            scrollToBottom();
 
-            puter.ai.chat(question)
+            puter.ai.chat(SYSTEM_PROMPT + "\n\n" + question)
                 .then(response => {
-                    output.innerHTML += `<p><strong>AI:</strong> ${response}</p>`;
-                    output.scrollTop = output.scrollHeight; // Auto-scroll
+                    const aiMsg = document.createElement('div');
+                    aiMsg.className = 'message ai';
+                    aiMsg.textContent = `Gaurav: ${response}`;
+                    output.appendChild(aiMsg);
+                    scrollToBottom();
                 })
                 .catch(error => {
-                    output.innerHTML += `<p style="color:red;">Error: ${error.message}</p>`;
+                    const errorMsg = document.createElement('div');
+                    errorMsg.className = 'message ai';
+                    errorMsg.style.color = 'red';
+                    errorMsg.textContent = `Error: ${error.message}`;
+                    output.appendChild(errorMsg);
+                    scrollToBottom();
                 });
         });
     </script>
