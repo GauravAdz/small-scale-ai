@@ -125,16 +125,8 @@ Never say you're an AI. Support markdown formatting: bold, italic, code, and lin
       scrollToBottom();
     }
 
-    // Authenticate on page load
-    puter.auth.getCurrentUser().then(user => {
-      if (!user) {
-        puter.auth.login().then(() => {
-          addMessage("Hi! I'm **Gaurav**. Ask me anything!");
-        });
-      } else {
-        addMessage("Hi! I'm **Gaurav**. Ask me anything!");
-      }
-    });
+    // Initial greeting
+    addMessage("Hi! I'm **Gaurav**. Ask me anything!");
 
     form.addEventListener('submit', function (e) {
       e.preventDefault();
