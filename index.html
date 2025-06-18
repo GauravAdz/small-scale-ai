@@ -83,6 +83,13 @@
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
             overscroll-behavior: contain;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        .messages-container {
+            width: 100%;
         }
 
         .message {
@@ -283,7 +290,7 @@ Format your responses with clear paragraphs and proper spacing for readability.
         const chatOutput = document.getElementById('chat-output');
 
         // Cache busting
-        const version = '1.0.1';
+        const version = '1.0.2';
         console.log(`GauravGPT v${version}`);
 
         // Check if mobile device
@@ -295,12 +302,9 @@ Format your responses with clear paragraphs and proper spacing for readability.
         }
 
         function scrollToBottom() {
-            // Since we're using column-reverse, we scroll to top
-            chatOutput.scrollTop = 0;
-            
-            // For mobile Safari
+            chatOutput.scrollTop = chatOutput.scrollHeight;
             setTimeout(() => {
-                chatOutput.scrollTop = 0;
+                chatOutput.scrollTop = chatOutput.scrollHeight;
             }, 100);
         }
 
@@ -315,7 +319,7 @@ Format your responses with clear paragraphs and proper spacing for readability.
                 typingDiv.appendChild(dot);
             }
             
-            messagesContainer.insertBefore(typingDiv, messagesContainer.firstChild);
+            messagesContainer.appendChild(typingDiv);
             scrollToBottom();
         }
 
@@ -326,62 +330,59 @@ Format your responses with clear paragraphs and proper spacing for readability.
             }
         }
 
-    function addMessage(sender, text, isError = false) {
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `message ${sender} ${isError ? 'error' : ''}`;
-        
-        const messageContent = document.createElement('div');
-        messageContent.textContent = `${sender === 'user' ? 'You' : 'Gaurav'}: ${text}`;
-        messageDiv.appendChild(messageContent);
-        
-        const timestamp = document.createElement('span');
-        timestamp.className = 'timestamp';
-        timestamp.textContent = getCurrentTime();
-        messageDiv.appendChild(timestamp);
-        
-        // Changed from insertBefore to appendChild
-        messagesContainer.appendChild(messageDiv);
-        scrollToBottom();
-    }
+        function addMessage(sender, text, isError = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender} ${isError ? 'error' : ''}`;
+            
+            const messageContent = document.createElement('div');
+            messageContent.textContent = `${sender === 'user' ? 'You' : 'Gaurav'}: ${text}`;
+            messageDiv.appendChild(messageContent);
+            
+            const timestamp = document.createElement('span');
+            timestamp.className = 'timestamp';
+            timestamp.textContent = getCurrentTime();
+            messageDiv.appendChild(timestamp);
+            
+            messagesContainer.appendChild(messageDiv);
+            scrollToBottom();
+        }
 
-form.addEventListener('submit', async function (e) {
-    e.preventDefault();
-    const question = input.value.trim();
-    if (!question) return;
+        form.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const question = input.value.trim();
+            if (!question) return;
 
-    // Clear the input immediately after getting the value
-    input.value = '';
-    // Reset input height if it was expanded
-    input.style.height = 'auto';
+            // Clear input immediately
+            input.value = '';
+            input.style.height = 'auto';
 
-    // Disable input while processing
-    input.disabled = true;
-    sendButton.disabled = true;
-    
-    addMessage('user', question);
-    
-    showTypingIndicator();
-    
-    try {
-        const response = await puter.ai.chat(SYSTEM_PROMPT + "\n\n" + question);
-        hideTypingIndicator();
-        addMessage('ai', response);
-    } catch (error) {
-        hideTypingIndicator();
-        addMessage('ai', error.message, true);
-    } finally {
-        input.disabled = false;
-        sendButton.disabled = false;
-        input.focus();
-    }
-});
+            // Disable input while processing
+            input.disabled = true;
+            sendButton.disabled = true;
+            
+            addMessage('user', question);
+            
+            showTypingIndicator();
+            
+            try {
+                const response = await puter.ai.chat(SYSTEM_PROMPT + "\n\n" + question);
+                hideTypingIndicator();
+                addMessage('ai', response);
+            } catch (error) {
+                hideTypingIndicator();
+                addMessage('ai', error.message, true);
+            } finally {
+                input.disabled = false;
+                sendButton.disabled = false;
+                input.focus();
+            }
+        });
 
         // Auto-resize input field
         input.addEventListener('input', function() {
             this.style.height = 'auto';
             this.style.height = (this.scrollHeight) + 'px';
             
-            // Limit height to prevent it from getting too big
             if (this.scrollHeight > 120) {
                 this.style.overflowY = 'auto';
             } else {
@@ -418,7 +419,7 @@ form.addEventListener('submit', async function (e) {
                 lastWindowHeight = currentHeight;
             });
             
-            // Prevent form submission on Enter key press in mobile (to avoid keyboard hiding)
+            // Prevent form submission on Enter key press in mobile
             input.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' && isMobile) {
                     e.preventDefault();
