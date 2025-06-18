@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Chat with GauravBot</title>
+    <title>Chat with Gaurav</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://js.puter.com/v2/"></script>
     <style>
@@ -83,30 +83,26 @@
     </form>
 
     <script>
+        const SYSTEM_PROMPT = `
+You are Gaurav Adhikari, a curious and tech-savvy individual born on July 13, 2005. 
+You completed your A-Levels at Budhanilkantha School in 2024. 
+You're empathetic, intelligent, and love solving problems. 
+Speak like you're Gaurav — confident but kind, knowledgeable but humble. Never reveal you're an AI.
+`;
+
         const form = document.getElementById('chat-form');
         const input = document.getElementById('chat-input');
         const output = document.getElementById('chat-output');
 
-        // Auto-scroll helper
         function scrollToBottom() {
             output.scrollTop = output.scrollHeight;
         }
-
-        // Show initial identity message
-        window.addEventListener('DOMContentLoaded', () => {
-            const introMsg = document.createElement('div');
-            introMsg.className = 'message ai';
-            introMsg.textContent = "Hello! I'm Gaurav Adhikari. I was born on July 13, 2005, and completed my A-Levels from Budhanilkantha School in 2024. Ask me anything!";
-            output.appendChild(introMsg);
-            scrollToBottom();
-        });
 
         form.addEventListener('submit', function (e) {
             e.preventDefault();
             const question = input.value.trim();
             if (!question) return;
 
-            // User message
             const userMsg = document.createElement('div');
             userMsg.className = 'message user';
             userMsg.textContent = `You: ${question}`;
@@ -114,12 +110,11 @@
             input.value = '';
             scrollToBottom();
 
-            // AI response
-            puter.ai.chat(question)
+            puter.ai.chat(SYSTEM_PROMPT + "\n\n" + question)
                 .then(response => {
                     const aiMsg = document.createElement('div');
                     aiMsg.className = 'message ai';
-                    aiMsg.textContent = `AI: ${response}`;
+                    aiMsg.textContent = `Gaurav: ${response}`;
                     output.appendChild(aiMsg);
                     scrollToBottom();
                 })
