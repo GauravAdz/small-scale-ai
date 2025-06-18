@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat with Puter AI</title>
+    <script src="https://js.puter.com/v2/"></script>
+</head>
+<body>
+    <form id="chat-form">
+        <input type="text" id="chat-input" placeholder="Ask me anything..." required>
+        <button type="submit">Send</button>
+    </form>
+    <div id="chat-output" style="margin-top: 20px;"></div>
+
+    <script>
+        const form = document.getElementById('chat-form');
+        const input = document.getElementById('chat-input');
+        const output = document.getElementById('chat-output');
+
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const question = input.value.trim();
+            if (!question) return;
+
+            // Optional: show user's question
+            output.innerHTML += `<p><strong>You:</strong> ${question}</p>`;
+            input.value = '';
+
+            puter.ai.chat(question)
+                .then(response => {
+                    output.innerHTML += `<p><strong>AI:</strong> ${response}</p>`;
+                    output.scrollTop = output.scrollHeight; // Auto-scroll
+                })
+                .catch(error => {
+                    output.innerHTML += `<p style="color:red;">Error: ${error.message}</p>`;
+                });
+        });
+    </script>
+</body>
+</html>
