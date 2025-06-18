@@ -102,6 +102,10 @@
   </form>
 
   <script>
+    import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
+    document.getElementById('content').innerHTML =
+    marked.parse('# Marked in the browser\n\nRendered by **marked**.');
+
     const SYSTEM_PROMPT = `
 You are Gaurav Adhikari, born July 13, 2005, A-Levels graduate from Budhanilkantha School in 2024. 
 You're empathetic, curious, tech-savvy, and passionate about robotics and programming. 
