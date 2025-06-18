@@ -2,8 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Chat with Gaurav</title>
+    <title>GauravGPT</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <script src="https://js.puter.com/v2/"></script>
     <style>
         :root {
@@ -16,6 +19,7 @@
             --msg-bg-ai: #ffffff;
             --input-bg: #ffffff;
             --border-color: #e0e0e0;
+            --header-bg: #ffffff;
         }
 
         @media (prefers-color-scheme: dark) {
@@ -29,6 +33,7 @@
                 --msg-bg-ai: #1a1a1a;
                 --input-bg: #2c2c2e;
                 --border-color: #38383a;
+                --header-bg: #1a1a1a;
             }
         }
 
@@ -48,12 +53,43 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        #header {
+            padding: 12px 16px;
+            background-color: var(--header-bg);
+            border-bottom: 1px solid var(--border-color);
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        #header h1 {
+            margin: 0;
+            font-size: 20px;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        #chat-container {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            overflow: hidden;
+        }
+
         #chat-output {
             flex: 1;
             padding: 12px 12px 0;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
             overscroll-behavior: contain;
+            display: flex;
+            flex-direction: column-reverse;
+        }
+
+        .messages-container {
+            display: flex;
+            flex-direction: column;
         }
 
         .message {
@@ -92,6 +128,8 @@
             background-color: var(--msg-bg-ai);
             border-radius: 18px;
             border-bottom-left-radius: 4px;
+            margin-bottom: 16px;
+            margin-right: auto;
         }
 
         .typing-dot {
@@ -191,6 +229,10 @@
             button {
                 padding: 8px 14px;
             }
+            
+            #header h1 {
+                font-size: 18px;
+            }
         }
 
         /* Scrollbar styling */
@@ -215,14 +257,22 @@
     </style>
 </head>
 <body>
-    <div id="chat-output"></div>
-
-    <form id="chat-form">
-        <div id="input-container">
-            <input type="text" id="chat-input" placeholder="Ask me anything..." autocomplete="off" required>
-            <button type="submit" id="send-button">Send</button>
+    <div id="header">
+        <h1>GauravGPT</h1>
+    </div>
+    
+    <div id="chat-container">
+        <div id="chat-output">
+            <div class="messages-container" id="messages-container"></div>
         </div>
-    </form>
+        
+        <form id="chat-form">
+            <div id="input-container">
+                <input type="text" id="chat-input" placeholder="Ask me anything..." autocomplete="off" required>
+                <button type="submit" id="send-button">Send</button>
+            </div>
+        </form>
+    </div>
 
     <script>
         const SYSTEM_PROMPT = `
@@ -235,8 +285,13 @@ Format your responses with clear paragraphs and proper spacing for readability.
 
         const form = document.getElementById('chat-form');
         const input = document.getElementById('chat-input');
-        const output = document.getElementById('chat-output');
+        const messagesContainer = document.getElementById('messages-container');
         const sendButton = document.getElementById('send-button');
+        const chatOutput = document.getElementById('chat-output');
+
+        // Cache busting
+        const version = '1.0.1';
+        console.log(`GauravGPT v${version}`);
 
         // Check if mobile device
         const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -247,16 +302,18 @@ Format your responses with clear paragraphs and proper spacing for readability.
         }
 
         function scrollToBottom() {
-            output.scrollTop = output.scrollHeight;
+            // Since we're using column-reverse, we scroll to top
+            chatOutput.scrollTop = 0;
+            
             // For mobile Safari
             setTimeout(() => {
-                output.scrollTop = output.scrollHeight;
+                chatOutput.scrollTop = 0;
             }, 100);
         }
 
         function showTypingIndicator() {
             const typingDiv = document.createElement('div');
-            typingDiv.className = 'message ai typing-indicator';
+            typingDiv.className = 'typing-indicator';
             typingDiv.id = 'typing-indicator';
             
             for (let i = 0; i < 3; i++) {
@@ -265,7 +322,7 @@ Format your responses with clear paragraphs and proper spacing for readability.
                 typingDiv.appendChild(dot);
             }
             
-            output.appendChild(typingDiv);
+            messagesContainer.insertBefore(typingDiv, messagesContainer.firstChild);
             scrollToBottom();
         }
 
@@ -289,7 +346,7 @@ Format your responses with clear paragraphs and proper spacing for readability.
             timestamp.textContent = getCurrentTime();
             messageDiv.appendChild(timestamp);
             
-            output.appendChild(messageDiv);
+            messagesContainer.insertBefore(messageDiv, messagesContainer.firstChild);
             scrollToBottom();
         }
 
@@ -317,6 +374,9 @@ Format your responses with clear paragraphs and proper spacing for readability.
                 input.disabled = false;
                 sendButton.disabled = false;
                 input.focus();
+                
+                // Reset input height if it was expanded
+                input.style.height = 'auto';
             }
         });
 
@@ -345,17 +405,21 @@ Format your responses with clear paragraphs and proper spacing for readability.
 
         // Handle mobile keyboard issues
         if (isMobile) {
-            const chatOutput = document.getElementById('chat-output');
-            const chatForm = document.getElementById('chat-form');
-            
             let lastWindowHeight = window.innerHeight;
             
             window.addEventListener('resize', () => {
-                if (window.innerHeight < lastWindowHeight) {
-                    // Keyboard probably opened
-                    setTimeout(scrollToBottom, 300);
+                const currentHeight = window.innerHeight;
+                if (currentHeight < lastWindowHeight) {
+                    // Keyboard opened
+                    setTimeout(() => {
+                        chatOutput.style.height = `calc(100vh - ${document.getElementById('header').offsetHeight}px - ${document.getElementById('chat-form').offsetHeight}px - ${window.innerHeight - currentHeight}px)`;
+                        scrollToBottom();
+                    }, 300);
+                } else if (currentHeight > lastWindowHeight) {
+                    // Keyboard closed
+                    chatOutput.style.height = '';
                 }
-                lastWindowHeight = window.innerHeight;
+                lastWindowHeight = currentHeight;
             });
             
             // Prevent form submission on Enter key press in mobile (to avoid keyboard hiding)
