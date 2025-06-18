@@ -350,35 +350,37 @@ Format your responses with clear paragraphs and proper spacing for readability.
             scrollToBottom();
         }
 
-        form.addEventListener('submit', async function (e) {
-            e.preventDefault();
-            const question = input.value.trim();
-            if (!question) return;
+form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const question = input.value.trim();
+    if (!question) return;
 
-            // Disable input while processing
-            input.disabled = true;
-            sendButton.disabled = true;
-            
-            addMessage('user', question);
-            
-            showTypingIndicator();
-            
-            try {
-                const response = await puter.ai.chat(SYSTEM_PROMPT + "\n\n" + question);
-                hideTypingIndicator();
-                addMessage('ai', response);
-            } catch (error) {
-                hideTypingIndicator();
-                addMessage('ai', error.message, true);
-            } finally {
-                input.disabled = false;
-                sendButton.disabled = false;
-                input.focus();
-                
-                // Reset input height if it was expanded
-                input.style.height = 'auto';
-            }
-        });
+    // Clear the input immediately after getting the value
+    input.value = '';
+    // Reset input height if it was expanded
+    input.style.height = 'auto';
+
+    // Disable input while processing
+    input.disabled = true;
+    sendButton.disabled = true;
+    
+    addMessage('user', question);
+    
+    showTypingIndicator();
+    
+    try {
+        const response = await puter.ai.chat(SYSTEM_PROMPT + "\n\n" + question);
+        hideTypingIndicator();
+        addMessage('ai', response);
+    } catch (error) {
+        hideTypingIndicator();
+        addMessage('ai', error.message, true);
+    } finally {
+        input.disabled = false;
+        sendButton.disabled = false;
+        input.focus();
+    }
+});
 
         // Auto-resize input field
         input.addEventListener('input', function() {
