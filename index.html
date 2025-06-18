@@ -138,14 +138,20 @@ Never say you're an AI. Support markdown formatting: bold, italic, code, and lin
 
       const fullPrompt = SYSTEM_PROMPT + "\n\n" + question;
 
-      puter.ai.chat(fullPrompt)
-        .then(response => {
-          addMessage(response, 'ai');
-        })
-        .catch(error => {
-          addMessage(`**Error:** ${error.message}`, 'ai');
-        });
+puter.ai.chat(fullPrompt)
+  .then(response => {
+    const message = typeof response === 'string'
+      ? response
+      : response?.message || response?.text || JSON.stringify(response);
+    addMessage(message, 'ai');
+  })
+  .catch(error => {
+    addMessage(`**Error:** ${error.message}`, 'ai');
+  });
     });
+
+    // Auto-scroll to bottom on load
+    scrollToBottom();
   </script>
 </body>
 </html>
