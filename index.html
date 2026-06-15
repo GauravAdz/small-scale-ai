@@ -48,7 +48,7 @@
             background: var(--bg-color);
             display: flex;
             flex-direction: column;
-            height: 100vh;
+            height: 100dvh; /* FIX: Use dynamic viewport height for mobile keyboards */
             overflow: hidden;
             -webkit-tap-highlight-color: transparent;
         }
@@ -85,11 +85,14 @@
             overscroll-behavior: contain;
             display: flex;
             flex-direction: column;
-            justify-content: flex-end;
         }
 
         .messages-container {
             width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            min-height: 100%;
         }
 
         .message {
@@ -156,8 +159,6 @@
             padding: 12px;
             background-color: var(--bg-color);
             border-top: 1px solid var(--border-color);
-            position: sticky;
-            bottom: 0;
             backdrop-filter: blur(10px);
         }
 
@@ -168,9 +169,10 @@
             border-radius: 20px;
             padding: 4px;
             border: 1px solid var(--border-color);
+            align-items: flex-end; /* Align bottom to handle growing textareas */
         }
 
-        input[type="text"] {
+        textarea {
             flex: 1;
             padding: 10px 14px;
             font-size: 16px;
@@ -178,6 +180,11 @@
             background: transparent;
             color: var(--ai-color);
             outline: none;
+            resize: none; /* FIX: Prevent manual resize */
+            min-height: 40px;
+            max-height: 120px;
+            font-family: inherit; /* FIX: inherit font for textarea */
+            overflow-y: hidden;
         }
 
         button {
@@ -190,6 +197,7 @@
             cursor: pointer;
             font-weight: 500;
             transition: background-color 0.2s;
+            height: 40px; /* Keep button height fixed */
         }
 
         button:active {
@@ -268,7 +276,7 @@
         
         <form id="chat-form">
             <div id="input-container">
-                <input type="text" id="chat-input" placeholder="Ask me anything..." autocomplete="off" required>
+                <textarea id="chat-input" placeholder="Ask me anything..." autocomplete="off" rows="1" required></textarea>
                 <button type="submit" id="send-button">Send</button>
             </div>
         </form>
@@ -290,11 +298,13 @@ Format your responses with clear paragraphs and proper spacing for readability.
         const chatOutput = document.getElementById('chat-output');
 
         // Cache busting
-        const version = '1.0.2';
+        const version = '1.0.3'; // Bumped version
         console.log(`GauravGPT v${version}`);
 
-        // Check if mobile device
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        // FIX: Maintain Conversation History array
+        let chatHistory = [
+            { role: "system", content: SYSTEM_PROMPT }
+        ];
 
         function getCurrentTime() {
             const now = new Date();
@@ -303,9 +313,10 @@ Format your responses with clear paragraphs and proper spacing for readability.
 
         function scrollToBottom() {
             chatOutput.scrollTop = chatOutput.scrollHeight;
+            // Fallback for slower rendering devices
             setTimeout(() => {
                 chatOutput.scrollTop = chatOutput.scrollHeight;
-            }, 100);
+            }, 50);
         }
 
         function showTypingIndicator() {
@@ -330,12 +341,27 @@ Format your responses with clear paragraphs and proper spacing for readability.
             }
         }
 
+        // FIX: Added line break support safely
         function addMessage(sender, text, isError = false) {
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${sender} ${isError ? 'error' : ''}`;
             
             const messageContent = document.createElement('div');
-            messageContent.textContent = `${sender === 'user' ? 'You' : 'Gaurav'}: ${text}`;
+            
+            // Format text to respect \n newlines
+            const prefix = sender === 'user' ? 'You: ' : 'Gaurav: ';
+            const boldPrefix = document.createElement('strong');
+            boldPrefix.textContent = prefix;
+            messageContent.appendChild(boldPrefix);
+
+            const lines = text.split('\n');
+            lines.forEach((line, index) => {
+                messageContent.appendChild(document.createTextNode(line));
+                if (index < lines.length - 1) {
+                    messageContent.appendChild(document.createElement('br'));
+                }
+            });
+
             messageDiv.appendChild(messageContent);
             
             const timestamp = document.createElement('span');
@@ -352,9 +378,9 @@ Format your responses with clear paragraphs and proper spacing for readability.
             const question = input.value.trim();
             if (!question) return;
 
-            // Clear input immediately
+            // Clear input immediately & reset height
             input.value = '';
-            input.style.height = 'auto';
+            input.style.height = '40px'; 
 
             // Disable input while processing
             input.disabled = true;
@@ -362,15 +388,25 @@ Format your responses with clear paragraphs and proper spacing for readability.
             
             addMessage('user', question);
             
+            // Add to context history
+            chatHistory.push({ role: "user", content: question });
+            
             showTypingIndicator();
             
             try {
-                const response = await puter.ai.chat(SYSTEM_PROMPT + "\n\n" + question);
+                // FIX: Send full history array instead of concatenated string
+                const response = await puter.ai.chat(chatHistory);
+                
+                // Add AI response to history
+                chatHistory.push({ role: "assistant", content: response.message?.content || response });
+
                 hideTypingIndicator();
-                addMessage('ai', response);
+                addMessage('ai', response.message?.content || response); // Handle object or string depending on puter API
             } catch (error) {
                 hideTypingIndicator();
                 addMessage('ai', error.message, true);
+                // Remove failed message from history
+                chatHistory.pop();
             } finally {
                 input.disabled = false;
                 sendButton.disabled = false;
@@ -378,9 +414,9 @@ Format your responses with clear paragraphs and proper spacing for readability.
             }
         });
 
-        // Auto-resize input field
+        // Auto-resize input field (Now works correctly with textarea)
         input.addEventListener('input', function() {
-            this.style.height = 'auto';
+            this.style.height = '40px'; // Reset to min-height to recalculate properly
             this.style.height = (this.scrollHeight) + 'px';
             
             if (this.scrollHeight > 120) {
@@ -390,43 +426,27 @@ Format your responses with clear paragraphs and proper spacing for readability.
             }
         });
 
+        // FIX: Handle Enter key submission, Shift+Enter for new line
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                form.dispatchEvent(new Event('submit'));
+            }
+        });
+
         // Focus input on page load
         window.addEventListener('load', () => {
             input.focus();
             
             // Add welcome message
             setTimeout(() => {
-                addMessage('ai', "Hi there! I'm Gaurav. How can I help you today?");
+                const welcomeMsg = "Hi there! I'm Gaurav. How can I help you today?";
+                addMessage('ai', welcomeMsg);
+                chatHistory.push({ role: "assistant", content: welcomeMsg });
             }, 500);
         });
 
-        // Handle mobile keyboard issues
-        if (isMobile) {
-            let lastWindowHeight = window.innerHeight;
-            
-            window.addEventListener('resize', () => {
-                const currentHeight = window.innerHeight;
-                if (currentHeight < lastWindowHeight) {
-                    // Keyboard opened
-                    setTimeout(() => {
-                        chatOutput.style.height = `calc(100vh - ${document.getElementById('header').offsetHeight}px - ${document.getElementById('chat-form').offsetHeight}px - ${window.innerHeight - currentHeight}px)`;
-                        scrollToBottom();
-                    }, 300);
-                } else if (currentHeight > lastWindowHeight) {
-                    // Keyboard closed
-                    chatOutput.style.height = '';
-                }
-                lastWindowHeight = currentHeight;
-            });
-            
-            // Prevent form submission on Enter key press in mobile
-            input.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' && isMobile) {
-                    e.preventDefault();
-                    form.dispatchEvent(new Event('submit'));
-                }
-            });
-        }
+        // (Removed the buggy mobile viewport JS listener. The CSS `height: 100dvh` natively handles this now!)
     </script>
 </body>
 </html>
