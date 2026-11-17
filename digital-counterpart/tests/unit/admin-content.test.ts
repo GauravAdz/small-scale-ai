@@ -62,7 +62,7 @@ describe("online content editor boundaries", () => {
     await expect(writeContent("data/notes/update.md", text, "old-sha"))
       .resolves.toBe("https://github.com/example/commit/1");
     const [url, init] = fetchMock.mock.calls[1] as unknown as [string, RequestInit];
-    expect(url).toMatch(/\/contents\/data\/notes\/update\.md$/);
+    expect(url).toMatch(/\/repos\/GauravAdz\/small-scale-ai\/contents\/digital-counterpart\/data\/notes\/update\.md$/);
     expect(init.method).toBe("PUT");
     const body = JSON.parse(String(init.body)) as Record<string, string>;
     expect(body).toMatchObject({ branch: "main", sha: "old-sha" });

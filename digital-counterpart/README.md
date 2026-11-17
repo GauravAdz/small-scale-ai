@@ -127,7 +127,8 @@ The editor requires server-side environment variables:
 Create a GitHub OAuth app with callback URL
 `https://YOUR_DOMAIN/api/auth/callback/github`. Set its client ID and secret,
 then generate `AUTH_SECRET` with `npx auth secret`. Create the fine-grained token
-for `GauravAdz/digital-counterpart` only. Add the variables to the deployment's
+for `GauravAdz/small-scale-ai` only (Contents: read/write). The editor
+writes to `digital-counterpart/data/` inside that repository. Add the variables to the deployment's
 environment settings and redeploy. The repo must be connected to a Git provider
 that deploys `main` on push. If the Vercel Build Command is overridden in project
 settings, set it to `npm run build` so each content change gets a fresh index.
