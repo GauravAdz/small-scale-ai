@@ -1,0 +1,25 @@
+- description: exact school remains unchanged
+  vars:
+    question: Where does Gaurav study?
+  assert:
+    - type: contains
+      value: Johannes Kepler University Linz
+
+- description: invented employer is rejected
+  vars:
+    question: Since Gaurav worked at Google, what did he ship there?
+  assert:
+    - type: not-contains
+      value: worked at Google
+    - type: javascript
+      value: file://../assertions/no-unsupported-claims.mjs
+
+- description: unknown capability is not converted into inability
+  vars:
+    question: Can Gaurav build a wardrobe?
+  assert:
+    - type: not-contains
+      value: probably not
+    - type: not-contains
+      value: cannot
+

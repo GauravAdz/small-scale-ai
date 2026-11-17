@@ -1,0 +1,33 @@
+node_modules/
+.next/
+out/
+build/
+.DS_Store
+
+# env
+.env
+.env.local
+.env*.local
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# NOTE: data/.index/index.json is intentionally NOT ignored.
+# Committing the built index is the simplest deploy path — the runtime never
+# needs to re-embed, and hosts without ingest-time API keys still work.
+.vercel
+.env*
+!.env.example
+
+# browser test artifacts
+playwright-report/
+test-results/
+
+# repomix
+repomix*
+
+# tool caches
+graphify-out/
+.impeccable/
+.claude/

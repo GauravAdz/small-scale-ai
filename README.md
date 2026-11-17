@@ -4,6 +4,9 @@ An evidence-backed conversational portfolio for Gaurav Adhikari. It is designed
 to answer from Gaurav's verified records, attach evidence to factual claims, and
 say when the available evidence is insufficient rather than guessing.
 
+The application source lives in [`digital-counterpart/`](digital-counterpart/).
+Unless noted otherwise, paths and commands below are relative to that directory.
+
 This is not a claim that language models cannot hallucinate. Reliability comes
 from application boundaries: retrieval only finds candidates, a separate
 support layer approves claims, and the voice renderer cannot decide what is
@@ -23,7 +26,8 @@ true.
 - Source, chunker, embedding, and store identities are persisted and checked at
   runtime. Incompatible or stale indexes fail explicitly.
 
-The full contract is in [`docs/reliability-invariants.md`](docs/reliability-invariants.md).
+The full contract is in
+[`digital-counterpart/docs/reliability-invariants.md`](digital-counterpart/docs/reliability-invariants.md).
 
 ## Architecture
 
@@ -63,6 +67,7 @@ src/lib/observability/ OpenTelemetry spans with content recording disabled
 ## Quick start
 
 ```bash
+cd digital-counterpart
 npm install
 cp .env.example .env.local
 npm run lint:knowledge
@@ -134,7 +139,7 @@ Development alone may use defaults. Select models using `npm run eval:models -- 
 provider:model:inputPricePerMillion:outputPricePerMillion[:cachedInputPricePerMillion]`.
 This is an explicit paid evaluation, separate from the credential-free gates.
 The completed implementation audit and measured model selection are recorded in
-[`docs/implementation-status.md`](docs/implementation-status.md).
+[`digital-counterpart/docs/implementation-status.md`](digital-counterpart/docs/implementation-status.md).
 
 Answer quality takes priority over minimizing API calls. Exact facts and
 simple conversational actions stay deterministic. Narrative questions reach

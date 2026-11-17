@@ -1,0 +1,240 @@
+{
+  "$schema": "./profile.schema.json",
+  "name": "Gaurav Adhikari",
+  "title": "Applied AI & Software Builder",
+  "tagline": "I build intelligent systems and interactive web applications that solve real-world problems.",
+  "age": 21,
+  "dateOfBirth": "2005-07-13",
+  "birthCountry": "Nepal",
+  "citizenship": "Nepalese",
+  "headline": "Machine learning, data science, and six years of robotics.",
+  "location": "Linz, Austria",
+  "freshness": {
+    "availabilityVerifiedAt": "2026-09-10T00:00:00+02:00",
+    "educationVerifiedAt": "2026-09-10T00:00:00+02:00"
+  },
+  "//avatar": "Optional. Drop a file in public/ and point here. Unset = initials.",
+  "avatar": "/profile-home.png",
+  "resume": "/resume.pdf",
+  "availability": {
+    "status": "open",
+    "label": "Open to internships, part-time technical roles & collaborations",
+    "interests": [
+      "AI engineering",
+      "AI agents and agentic AI",
+      "AI product development",
+      "Machine learning engineering",
+      "Student-level AI research",
+      "Software engineering"
+    ],
+    "note": "Looking for student jobs, internships, or part-time technical roles in Austria; also open to remote opportunities. Available for around 20 hours per week while studying full-time. Open to startups, research-oriented teams, and established technology companies."
+  },
+  "bio": "Hi, I'm Gaurav — an AI enthusiast passionate about machine learning, data science, and developing new technologies. From my early days building robotics at Budhanilkantha School to exploring AI frameworks today, my goal is to build intelligent systems and interactive web applications that solve real-world problems.",
+  "focusAreas": [
+    {
+      "label": "Data Science & ML",
+      "detail": "Python, PyTorch, Pandas"
+    },
+    {
+      "label": "Robotics",
+      "detail": "6+ years"
+    },
+    {
+      "label": "Web Development",
+      "detail": "React, Node, TypeScript"
+    }
+  ],
+  "contact": {
+    "email": "admin@gauravadhikari.info.np",
+    "linkedin": "https://www.linkedin.com/in/gauravadz/",
+    "github": "https://github.com/GauravAdz",
+    "website": "https://gauravadhikari.info.np"
+  },
+  "links": [
+    {
+      "label": "GitHub",
+      "href": "https://github.com/GauravAdz",
+      "icon": "github"
+    },
+    {
+      "label": "LinkedIn",
+      "href": "https://www.linkedin.com/in/gauravadz/",
+      "icon": "linkedin"
+    },
+    {
+      "label": "Email",
+      "href": "mailto:admin@gauravadhikari.info.np",
+      "icon": "mail"
+    },
+    {
+      "label": "Download CV",
+      "href": "/resume.pdf",
+      "icon": "file"
+    },
+    {
+      "label": "X (Twitter)",
+      "href": "https://www.twitter.com/gauravadz",
+      "icon": "x"
+    },
+    {
+      "label": "Instagram",
+      "href": "https://www.instagram.com/gauravadz",
+      "icon": "globe"
+    },
+    {
+      "label": "YouTube",
+      "href": "https://www.youtube.com/@GalaxProzSeries",
+      "icon": "globe"
+    }
+  ],
+  "metrics": [
+    {
+      "label": "Robotics",
+      "value": "6+ yrs",
+      "hint": "Since Budhanilkantha School"
+    }
+  ],
+  "skills": [
+    {
+      "group": "AI & Data Science",
+      "aliases": ["artificial intelligence", "machine learning", "ML", "data analysis", "RAG", "LLM", "generative AI", "prompt design", "agentic AI", "AI agents", "AI coding agents", "intelligent automation"],
+      "items": [
+        {
+          "name": "Python",
+          "level": "Experienced"
+        },
+        {
+          "name": "Pandas",
+          "level": "Experienced"
+        },
+        {
+          "name": "PyTorch",
+          "level": "Intermediate"
+        },
+        {
+          "name": "Shiny Express",
+          "level": "Intermediate"
+        },
+        "TensorFlow",
+        "NumPy",
+        "Matplotlib"
+      ]
+    },
+    {
+      "group": "Web Development",
+      "aliases": ["web", "frontend", "front end", "backend", "full stack"],
+      "items": [
+        {
+          "name": "HTML / CSS",
+          "level": "Experienced"
+        },
+        {
+          "name": "JavaScript",
+          "level": "Intermediate"
+        },
+        {
+          "name": "React JS",
+          "level": "Intermediate"
+        },
+        {
+          "name": "Node JS",
+          "level": "Intermediate"
+        },
+        {
+          "name": "TypeScript",
+          "level": "Intermediate"
+        },
+        {
+          "name": "Next.js",
+          "level": "Intermediate"
+        }
+      ]
+    },
+    {
+      "group": "Beyond code",
+      "aliases": ["quantitative finance", "graphic design", "robotics", "electronics", "embedded systems", "makerspace", "technical mentoring", "teaching", "team leadership"],
+      "items": [
+        {
+          "name": "Robotics",
+          "level": "Experienced"
+        },
+        {
+          "name": "Quant Finance",
+          "level": "Intermediate"
+        },
+        {
+          "name": "Graphics Design",
+          "level": "Intermediate"
+        },
+        "Arduino",
+        "Raspberry Pi",
+        "Electronics",
+        "Embedded systems",
+        "Technical mentoring",
+        "Science teaching",
+        "Team leadership",
+        "Adobe InDesign",
+        "Adobe Photoshop",
+        "Adobe Illustrator",
+        {
+          "name": "Football",
+          "level": "Active"
+        }
+      ]
+    }
+  ],
+  "education": [
+    {
+      "school": "Johannes Kepler University Linz",
+      "credential": "BSc Artificial Intelligence",
+      "start": "March 2026",
+      "end": "present",
+      "expectedEnd": "February 2029",
+      "studyMode": "Full-time",
+      "instructionLanguage": "English",
+      "coursework": {
+        "taken": [
+          "Introduction to AI",
+          "Programming in Python II",
+          "Statistics for AI",
+          "Mathematics for AI II",
+          "Algorithms and Data Structures 1"
+        ],
+        "recognized": ["Programming in Python I"],
+        "planned": [
+          "Hands-on AI II",
+          "Machine Learning and Pattern Classification"
+        ]
+      },
+      "location": "Linz, Austria"
+    },
+    {
+      "school": "Budhanilkantha School",
+      "credential": "Cambridge International A Levels",
+      "start": "2022",
+      "end": "June 2024",
+      "coursework": {
+        "taken": [
+          "Physics",
+          "Chemistry",
+          "Mathematics",
+          "Computer Science",
+          "English General Paper"
+        ],
+        "recognized": [],
+        "planned": []
+      },
+      "detail": "Studied Further Mathematics for one year without sitting the final examination.",
+      "location": "Kathmandu, Nepal"
+    }
+  ],
+  "pinnedProjects": [
+    "appogeny",
+    "linzsings",
+    "digital-counterpart",
+    "smart-farm",
+    "satellite-classifier",
+    "udaan",
+    "gauravgpt"
+  ]
+}

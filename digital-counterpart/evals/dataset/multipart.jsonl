@@ -1,0 +1,3 @@
+{"id":"multipart-mixed","question":"Where does Gaurav study, and what grades is he getting?","expected":{"clauses":[{"status":"supported","evidenceIds":["evidence:profile:education"]},{"status":"not-recorded"}],"requiredFacts":["Johannes Kepler University Linz"]},"tags":["multipart","mixed-support"]}
+{"id":"multipart-availability","question":"What degree is he studying, and is he available in October?","expected":{"clauses":[{"status":"supported"},{"status":"not-recorded"}]},"tags":["multipart","mixed-support"]}
+{"id":"multipart-contact","question":"Where is Gaurav based, and what is his email?","expected":{"clauses":[{"status":"supported"},{"status":"supported"}]},"tags":["multipart","exact-fact"]}

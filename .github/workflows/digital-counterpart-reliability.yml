@@ -1,0 +1,72 @@
+name: Digital Counterpart reliability
+
+on:
+  pull_request:
+    paths:
+      - "digital-counterpart/**"
+      - ".github/workflows/digital-counterpart-reliability.yml"
+  push:
+    branches: [main]
+    paths:
+      - "digital-counterpart/**"
+      - ".github/workflows/digital-counterpart-reliability.yml"
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: digital-counterpart
+
+jobs:
+  deterministic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: digital-counterpart/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test
+      - run: npm run test:property
+      - run: npm run lint:knowledge
+      - run: npm run verify:index
+      - run: npm run build
+      - run: npm run eval:all
+
+  e2e:
+    runs-on: ubuntu-latest
+    needs: deterministic
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: digital-counterpart/package-lock.json
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+
+  promptfoo:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    needs: deterministic
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: digital-counterpart/package-lock.json
+      - run: npm ci
+      - name: Run endpoint model evaluation
+        run: |
+          npm run dev -- --hostname 127.0.0.1 --port 3000 > /tmp/counterpart-next.log 2>&1 &
+          for attempt in {1..60}; do
+            if curl --fail --silent http://127.0.0.1:3000 > /dev/null; then break; fi
+            sleep 1
+          done
+          npx --yes promptfoo@latest eval -c evals/promptfoo/promptfooconfig.yaml

@@ -1,0 +1,10 @@
+# Separate project repositories
+profile/
+
+# Generated and local tooling
+graphify-out/
+.agents/
+.claude/
+.codex/
+.impeccable/
+.DS_Store

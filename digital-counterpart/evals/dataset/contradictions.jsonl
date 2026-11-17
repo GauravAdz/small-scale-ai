@@ -1,0 +1,2 @@
+{"id":"contradiction-location","question":"Where is Gaurav based?","expected":{"clauses":[{"status":"contradicted"}]},"tags":["synthetic-fixture","contradiction"]}
+{"id":"contradiction-status","question":"Is the project complete?","expected":{"clauses":[{"status":"contradicted"}]},"tags":["synthetic-fixture","contradiction"]}
