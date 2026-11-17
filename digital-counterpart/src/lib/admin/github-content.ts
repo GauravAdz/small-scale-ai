@@ -3,8 +3,13 @@ import { z } from "zod";
 
 import { frontmatterSchema, profileSchema } from "@/lib/knowledge/schema";
 
-export const REPO = "GauravAdz/digital-counterpart";
+export const REPO = "GauravAdz/small-scale-ai";
 export const BRANCH = "main";
+// The editor exposes app-relative paths (data/*), but this app lives in a monorepo.
+const REPO_PATH_PREFIX = "digital-counterpart/";
+function repoPath(path: string): string {
+  return `${REPO_PATH_PREFIX}${path}`;
+}
 const API = `https://api.github.com/repos/${REPO}`;
 
 export type ContentFile = { path: string; sha: string; content: string; document: EditorDocument };
@@ -133,15 +138,16 @@ export async function listContent(): Promise<ContentEntry[]> {
   );
   if (tree.truncated) throw new GitHubContentError("Repository listing was truncated.", 503);
   return tree.tree
-    .filter((entry) => entry.type === "blob" && allowedPath(entry.path))
-    .map(({ path, sha }) => ({ path, sha }))
+    .filter((entry) => entry.type === "blob" && entry.path.startsWith(REPO_PATH_PREFIX))
+    .map(({ path, sha }) => ({ path: path.slice(REPO_PATH_PREFIX.length), sha }))
+    .filter(({ path }) => allowedPath(path))
     .sort((a, b) => a.path.localeCompare(b.path));
 }
 
 export async function readContent(path: string): Promise<ContentFile> {
   if (!allowedPath(path)) throw new GitHubContentError("Choose a file inside data/.", 400);
   const file = await github<{ sha: string; content: string; encoding: string; type: string }>(
-    `${API}/contents/${path}?ref=${BRANCH}`,
+    `${API}/contents/${repoPath(path)}?ref=${BRANCH}`,
   );
   if (file.type !== "file" || file.encoding !== "base64") {
     throw new GitHubContentError("GitHub returned an unsupported file format.", 502);
@@ -159,7 +165,7 @@ export async function readContent(path: string): Promise<ContentFile> {
 export async function writeContent(path: string, content: string, sha?: string): Promise<string> {
   validateContent(path, content);
   await validateRecordLinks(path, content, sha);
-  const result = await github<{ commit: { html_url: string } }>(`${API}/contents/${path}`, {
+  const result = await github<{ commit: { html_url: string } }>(`${API}/contents/${repoPath(path)}`, {
     method: "PUT",
     body: JSON.stringify({
       message: `${sha ? "Update" : "Add"} portfolio content: ${path}`,
@@ -221,7 +227,7 @@ export async function deleteContent(path: string, sha: string): Promise<string> 
       throw new GitHubContentError("Unpin this project in Profile before removing it.", 400);
     }
   }
-  const result = await github<{ commit: { html_url: string } }>(`${API}/contents/${path}`, {
+  const result = await github<{ commit: { html_url: string } }>(`${API}/contents/${repoPath(path)}`, {
     method: "DELETE",
     body: JSON.stringify({ message: `Remove portfolio content: ${path}`, sha, branch: BRANCH }),
   });
