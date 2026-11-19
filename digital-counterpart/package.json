@@ -43,6 +43,7 @@
     "@ai-sdk/openai": "^4.0.42",
     "@ai-sdk/react": "^4.0.69",
     "@opentelemetry/api": "^1.9.1",
+    "@vercel/analytics": "^2.0.1",
     "@vercel/functions": "^3.9.5",
     "@xyflow/react": "^12.11.6",
     "ai": "^7.0.66",
